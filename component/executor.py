@@ -12,13 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Example of a Hello World TFX custom component.
-
-This custom component simply passes examples through. This is meant to serve as
-a kind of starting point example for creating custom components.
-
-This component along with other custom component related code will only serve as
-an example and will not be supported by TFX team.
+"""Executor code for TFX Schema Curation Custom Component
 """
 
 import json
@@ -35,7 +29,7 @@ from tfx.utils import io_utils
 _DEFAULT_FILE_NAME = 'schema.pbtxt'
 
 class Executor(base_executor.BaseExecutor):
-  """Executor for HelloComponent."""
+  """Executor for TFX Schema Curation Custom Component."""
 
   def Do(self, input_dict: Dict[Text, List[types.Artifact]],
          output_dict: Dict[Text, List[types.Artifact]],

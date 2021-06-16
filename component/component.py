@@ -12,14 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Example of a Hello World TFX custom component.
-
-This custom component simply reads tf.Examples from input and passes through as
-output.  This is meant to serve as a kind of starting point example for creating
-custom components.
-
-This component along with other custom component related code will only serve as
-an example and will not be supported by TFX team.
+"""TFX Schema Curation Custom Component
 """
 
 from typing import List, Optional, Text
@@ -27,7 +20,6 @@ from typing import List, Optional, Text
 from tfx import types
 from tfx.dsl.components.base import base_component
 from tfx.dsl.components.base import executor_spec
-# from tfx.examples.custom_components.hello_world.hello_component import executor
 from tfx.types import channel_utils
 from tfx.types import standard_artifacts
 from tfx.types.component_spec import ChannelParameter
@@ -37,7 +29,7 @@ from tfx.utils import json_utils
 import executor
 
 class SchemaCurationSpec(types.ComponentSpec):
-  """ComponentSpec for Custom TFX Schema Curation Component."""
+  """ComponentSpec for TFX Schema Curation Custom Component."""
 
   PARAMETERS = {
       # These are parameters that will be passed in the call to

@@ -12,13 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for SchemaCuration Component."""
+"""Tests for TFX Schema Curation Custom Component."""
 
 import json
 
 import tensorflow as tf
 
-# from tfx.examples.custom_components.hello_world.hello_component import component
 from tfx.types import artifact
 from tfx.types import channel_utils
 from tfx.types import standard_artifacts
