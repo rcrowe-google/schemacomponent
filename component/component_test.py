@@ -12,41 +12,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for HelloComponent."""
+"""Tests for TFX Schema Curation Custom Component."""
 
 import json
 
 import tensorflow as tf
 
-from tfx.examples.custom_components.hello_world.hello_component import component
 from tfx.types import artifact
 from tfx.types import channel_utils
 from tfx.types import standard_artifacts
+from tfx.types import standard_component_specs
+from tfx.types import artifact_utils
+import component
 
 
-class HelloComponentTest(tf.test.TestCase):
-
-  def setUp(self):
-    super(HelloComponentTest, self).setUp()
-    self.name = 'HelloWorld'
+class SchemaCurationTest(tf.test.TestCase):
 
   def testConstruct(self):
-    input_data = standard_artifacts.Examples()
-    input_data.split_names = json.dumps(artifact.DEFAULT_EXAMPLE_SPLITS)
-    output_data = standard_artifacts.Examples()
-    output_data.split_names = json.dumps(artifact.DEFAULT_EXAMPLE_SPLITS)
-    this_component = component.HelloComponent(
-        input_data=channel_utils.as_channel([input_data]),
-        output_data=channel_utils.as_channel([output_data]),
-        name=u'Testing123')
-    self.assertEqual(standard_artifacts.Examples.TYPE_NAME,
-                     this_component.outputs['output_data'].type_name)
-    artifact_collection = this_component.outputs['output_data'].get()
-    for artifacts in artifact_collection:
-      split_list = json.loads(artifacts.split_names)
-      self.assertEqual(artifact.DEFAULT_EXAMPLE_SPLITS.sort(),
-                       split_list.sort())
-
+    statistics_artifact = standard_artifacts.ExampleStatistics()
+    statistics_artifact.split_names = artifact_utils.encode_split_names(
+        ['train', 'eval'])
+    exclude_splits = []
+    schema_curation = component.SchemaCuration(
+        statistics=channel_utils.as_channel([statistics_artifact]),
+        input_schema=channel_utils.as_channel([standard_artifacts.Schema()]),
+        exclude_splits=exclude_splits,
+        )
+    self.assertEqual(
+        standard_artifacts.Schema.TYPE_NAME,
+        schema_curation.outputs['output_schema'].type_name)
+    
 
 if __name__ == '__main__':
   tf.test.main()

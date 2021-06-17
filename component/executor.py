@@ -12,13 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Example of a Hello World TFX custom component.
-
-This custom component simply passes examples through. This is meant to serve as
-a kind of starting point example for creating custom components.
-
-This component along with other custom component related code will only serve as
-an example and will not be supported by TFX team.
+"""Executor code for TFX Schema Curation Custom Component
 """
 
 import json
@@ -32,9 +26,10 @@ from tfx.dsl.io import fileio
 from tfx.types import artifact_utils
 from tfx.utils import io_utils
 
+_DEFAULT_FILE_NAME = 'schema.pbtxt'
 
 class Executor(base_executor.BaseExecutor):
-  """Executor for HelloComponent."""
+  """Executor for TFX Schema Curation Custom Component."""
 
   def Do(self, input_dict: Dict[Text, List[types.Artifact]],
          output_dict: Dict[Text, List[types.Artifact]],
@@ -67,22 +62,40 @@ class Executor(base_executor.BaseExecutor):
     """
     self._log_startup(input_dict, output_dict, exec_properties)
 
-    input_artifact = artifact_utils.get_single_instance(
-        input_dict['input_data'])
-    output_artifact = artifact_utils.get_single_instance(
-        output_dict['output_data'])
-    output_artifact.split_names = input_artifact.split_names
+    # Load and deserialize exclude splits from execution properties.
+    exclude_splits = json_utils.loads(
+        exec_properties.get('exclude_splits', 'null')) or []
+    if not isinstance(exclude_splits, list):
+      raise ValueError('exclude_splits in execution properties needs to be a '
+                       'list. Got %s instead.' % type(exclude_splits))
 
-    split_to_instance = {}
+    # Setup output splits.
+    stats_artifact = artifact_utils.get_single_instance(
+        input_dict['statistics'])
+    stats_split_names = artifact_utils.decode_split_names(
+        stats_artifact.split_names)
+    split_names = [
+        split for split in stats_split_names if split not in exclude_splits
+    ]
 
-    for split in json.loads(input_artifact.split_names):
-      uri = artifact_utils.get_split_uri([input_artifact], split)
-      split_to_instance[split] = uri
+    schema = io_utils.SchemaReader().read(
+        io_utils.get_only_uri_in_dir(
+            artifact_utils.get_single_uri(
+                input_dict['schema'])))
 
-    for split, instance in split_to_instance.items():
-      input_dir = instance
-      output_dir = artifact_utils.get_split_uri([output_artifact], split)
-      for filename in fileio.listdir(input_dir):
-        input_uri = os.path.join(input_dir, filename)
-        output_uri = os.path.join(output_dir, filename)
-        io_utils.copy_file(src=input_uri, dst=output_uri, overwrite=True)
+    for split in artifact_utils.decode_split_names(stats_artifact.split_names):
+      if split in exclude_splits:
+        continue
+      logging.info(
+          'Curating schema against the computed statistics for '
+          'split %s.', split)
+
+    output_schema = schema
+
+    output_uri = os.path.join(
+        artifact_utils.get_single_uri(
+            output_dict['schema']),
+        _DEFAULT_FILE_NAME)
+    io_utils.write_pbtxt_file(output_uri, output_schema)
+    logging.info('Schema written to %s.', output_uri)
+    
