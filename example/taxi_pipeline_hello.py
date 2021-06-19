@@ -14,13 +14,13 @@
 # limitations under the License.
 """Chicago taxi example using TFX."""
 
+from component import component
 import os
 from typing import Text
 
 import absl
-from tfx.components import CsvExampleGen
-from tfx.components import StatisticsGen
-from tfx.examples.custom_components.hello_world.hello_component import component
+from tfx.components import CsvExampleGen, StatisticsGen, SchemaGen
+# from tfx.examples.custom_components.hello_world.hello_component import component
 from tfx.orchestration import metadata
 from tfx.orchestration import pipeline
 from tfx.orchestration.beam.beam_dag_runner import BeamDagRunner
@@ -44,32 +44,36 @@ _metadata_path = os.path.join(_tfx_root, 'metadata', _pipeline_name,
 
 def _create_pipeline(pipeline_name: Text, pipeline_root: Text, data_root: Text,
                      metadata_path: Text) -> pipeline.Pipeline:
-  """Implements the chicago taxi pipeline with TFX."""
-  # Brings data into the pipeline or otherwise joins/converts training data.
-  example_gen = CsvExampleGen(input_base=data_root)
+    """Implements the chicago taxi pipeline with TFX."""
+    # Brings data into the pipeline or otherwise joins/converts training data.
+    example_gen = CsvExampleGen(input_base=data_root)
 
-  hello = component.HelloComponent(
-      input_data=example_gen.outputs['examples'], name=u'HelloWorld')
+    # Computes statistics over data for visualization and example validation.
+    statistics_gen = StatisticsGen(examples=example_gen.outputs['output_data'])
 
-  # Computes statistics over data for visualization and example validation.
-  statistics_gen = StatisticsGen(examples=hello.outputs['output_data'])
+    schema_gen = SchemaGen(statistics=statistics_gen.outputs['statistics'], infer_feature_shape=True)
 
-  return pipeline.Pipeline(
-      pipeline_name=pipeline_name,
-      pipeline_root=pipeline_root,
-      components=[example_gen, hello, statistics_gen],
-      enable_cache=True,
-      metadata_connection_config=metadata.sqlite_metadata_connection_config(
-          metadata_path))
+    schema_curation = component.SchemaCuration(
+        input_schema=schema_gen.outputs['schema'],
+        name=u'SchemaCuration')
+
+
+    return pipeline.Pipeline(
+        pipeline_name=pipeline_name,
+        pipeline_root=pipeline_root,
+        components=[example_gen, statistics_gen, schema_gen, schema_curation],
+        enable_cache=True,
+        metadata_connection_config=metadata.sqlite_metadata_connection_config(
+            metadata_path))
 
 
 # To run this pipeline from the python CLI:
 #   $python taxi_pipeline_hello.py
 if __name__ == '__main__':
-  absl.logging.set_verbosity(absl.logging.INFO)
-  BeamDagRunner().run(
-      _create_pipeline(
-          pipeline_name=_pipeline_name,
-          pipeline_root=_pipeline_root,
-          data_root=_data_root,
-          metadata_path=_metadata_path))
+    absl.logging.set_verbosity(absl.logging.INFO)
+    BeamDagRunner().run(
+        _create_pipeline(
+            pipeline_name=_pipeline_name,
+            pipeline_root=_pipeline_root,
+            data_root=_data_root,
+            metadata_path=_metadata_path))
