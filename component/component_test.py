@@ -29,14 +29,8 @@ import component
 class SchemaCurationTest(tf.test.TestCase):
 
   def testConstruct(self):
-    statistics_artifact = standard_artifacts.ExampleStatistics()
-    statistics_artifact.split_names = artifact_utils.encode_split_names(
-        ['train', 'eval'])
-    exclude_splits = []
     schema_curation = component.SchemaCuration(
-        statistics=channel_utils.as_channel([statistics_artifact]),
         input_schema=channel_utils.as_channel([standard_artifacts.Schema()]),
-        exclude_splits=exclude_splits,
         )
     self.assertEqual(
         standard_artifacts.Schema.TYPE_NAME,
