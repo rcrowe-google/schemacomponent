@@ -1,5 +1,5 @@
 # Lint as: python3
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
 # limitations under the License.
 """Tests for TFX Schema Curation Custom Component."""
 
-import json
-
 import tensorflow as tf
 
-from tfx.types import artifact
 from tfx.types import channel_utils
 from tfx.types import standard_artifacts
-from tfx.types import standard_component_specs
-from tfx.types import artifact_utils
 import component
 
 
@@ -30,11 +25,11 @@ class SchemaCurationTest(tf.test.TestCase):
 
   def testConstruct(self):
     schema_curation = component.SchemaCuration(
-        input_schema=channel_utils.as_channel([standard_artifacts.Schema()]),
+        schema=channel_utils.as_channel([standard_artifacts.Schema()]),
         )
     self.assertEqual(
         standard_artifacts.Schema.TYPE_NAME,
-        schema_curation.outputs['output_schema'].type_name)
+        schema_curation.outputs['custom_schema'].type_name)
     
 
 if __name__ == '__main__':
