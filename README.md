@@ -5,6 +5,12 @@
 
 This is a TFX-component that allows its users to apply a user code to a schema produced by the [SchemaGen](https://www.tensorflow.org/tfx/guide/schemagen) component, and curate it based on domain knowledge. It fits seamlessly into the ML-pipline made with TFX, and allows schema manipulation based on a module file provided by the User.
 
+## Usage
+### Examples demonstrating how to use Schema curation component
+
+To run locally: [taxi_example_local.py](https://github.com/rcrowe-google/schemacomponent/blob/main/example/taxi_example_local.py)
+TO run in colab: [taxi_example_colab.ipynb](https://github.com/rcrowe-google/schemacomponent/blob/main/example/taxi_example_colab.ipynb)
+
 ## Documentation
 
 ### Inputs:
