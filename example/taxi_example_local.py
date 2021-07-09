@@ -65,7 +65,7 @@ def _create_pipeline(pipeline_name: Text, pipeline_root: Text, data_root: Text,
 
     # modifies infered schema with use of udf `schema_fn` defined in module file
     schema_curation = component.SchemaCuration(schema=schema_gen.outputs['schema'],
-        module_file='schemacomponent\example\module_file.py')
+        module_file=os.path.join('schemacomponent','example','module_file.py')
 
 
     return pipeline.Pipeline(
