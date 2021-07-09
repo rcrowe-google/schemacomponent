@@ -43,8 +43,8 @@ DATA_PATH = 'https://raw.githubusercontent.com/tensorflow/tfx/master/tfx/example
 _data_filepath = os.path.join(_data_root, "data.csv")
 urllib.request.urlretrieve(DATA_PATH, _data_filepath)
 
-_pipeline_name = tfx.__path__[0]
-_tfx_root = "schemacomponent"
+_pipeline_name = 'taxi_pipeline'
+_tfx_root = tfx.__path__[0]
 _pipeline_root = os.path.join(_tfx_root, 'pipelines', _pipeline_name)
 _metadata_path = os.path.join(_tfx_root, 'metadata', _pipeline_name,
                               'metadata.db')
