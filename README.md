@@ -12,6 +12,6 @@ This repo contains the code for Schema Curation Custom Component made as a part 
 
 ### Interns:
 - [Pratishtha Abrol](https://github.com/pratishtha-abrol) **(Team Leader)**
-- [Fatima Adwan](https://github.com/FatimahAdwan/FatimahAdwan)
+- [Fatimah Adwan](https://github.com/FatimahAdwan/)
 - [Kshitijaa Jaglan](https://github.com/deutranium/)
 - [Nirzari Gupta](https://github.com/Nirzu97)
