@@ -48,20 +48,14 @@ schemacomponent
 │   ├── component.py
 │   ├── component_test.py
 │   ├── executor.py
+|   ├── executor_test.py
 │   ├── __init__.py
-│   └── __pycache__
-│       ├── component.cpython-38.pyc
-│       └── executor.cpython-38.pyc
 ├── CONTRIBUTING.md
-├── data
-│   └── data.csv
 ├── example
 │   ├── __init__.py
 │   ├── module_file.py
 │   ├── taxi_example_colab.ipynb
 │   ├── taxi_example_local.py
-│   ├── taxi_pipeline_hello_e2e_test.py
-│   └── taxi_pipeline_hello.py
 ├── __init__.py
 ├── PROPOSAL.md
 └── README.md
