@@ -27,6 +27,7 @@ import urllib
 import os
 from typing import Text
 import absl
+import tfx
 from tfx.components import CsvExampleGen, StatisticsGen, SchemaGen
 from tfx.orchestration import metadata
 from tfx.orchestration import pipeline
