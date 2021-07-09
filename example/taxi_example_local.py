@@ -26,12 +26,11 @@ import tempfile
 import urllib
 import os
 from typing import Text
-import tfx
 import absl
 from tfx.components import CsvExampleGen, StatisticsGen, SchemaGen
 from tfx.orchestration import metadata
 from tfx.orchestration import pipeline
-from tfx.orchestration.beam.beam_dag_runner import BeamDagRunner
+from tfx.orchestration.local import local_dag_runner
 
 sys.path.append(".")
 from schemacomponent.component import component
@@ -45,7 +44,7 @@ _data_filepath = os.path.join(_data_root, "data.csv")
 urllib.request.urlretrieve(DATA_PATH, _data_filepath)
 
 _pipeline_name = 'taxi_pipeline'
-_tfx_root = tfx.__path__[0]
+_tfx_root = "schemacomponent"
 _pipeline_root = os.path.join(_tfx_root, 'pipelines', _pipeline_name)
 _metadata_path = os.path.join(_tfx_root, 'metadata', _pipeline_name,
                               'metadata.db')
@@ -73,7 +72,7 @@ def _create_pipeline(pipeline_name: Text, pipeline_root: Text, data_root: Text,
         pipeline_name=pipeline_name,
         pipeline_root=pipeline_root,
         components=[example_gen, statistics_gen, schema_gen, schema_curation],
-        enable_cache=True,
+        enable_cache=False,
         metadata_connection_config=metadata.sqlite_metadata_connection_config(
             metadata_path))
 
@@ -82,7 +81,7 @@ def _create_pipeline(pipeline_name: Text, pipeline_root: Text, data_root: Text,
 #   $python taxi_pipeline_hello.py
 if __name__ == '__main__':
     absl.logging.set_verbosity(absl.logging.INFO)
-    BeamDagRunner().run(
+    local_dag_runner.LocalDagRunner().run(
         _create_pipeline(
             pipeline_name=_pipeline_name,
             pipeline_root=_pipeline_root,
